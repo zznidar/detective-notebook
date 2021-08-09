@@ -1,0 +1,2 @@
+# detective-notebook
+Cluedo solver
