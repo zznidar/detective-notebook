@@ -69,25 +69,23 @@ function knownCard(player, card) {
     }
 }
 
+function init(inNames, inNCards) {
+    alert(inNames + inNCards);
+    playersOrder = new Set(inNames.split(","));
+    for(let playername of playersOrder) {
+        players.set(playername, new Player());
+    }
+
+    // If there are fewer than 6 players, cards are split evenly, 3 are put into envelope, 
+    // and excess cards are shown to public. Assign them to a "publiclyKnown" player, but 
+    // don't add that player into the playersOrder
+    const PUBLICLY_KNOWN = "publiclyKnown";
+    players.set(PUBLICLY_KNOWN, new Player(true, false));
+}
+
 rounds = []; // Array of all rounds
 const players = new Map(); // Array of players added in order, starting with yourself
 
-// Put this inside an init(players) function
-// Maybe some sort of playersOrder = new Set(players.split(",")) for faster input of player names
-playersOrder = ["Me", "Player1", "Player2", "Player3", "Player4", "Player5"];
-for(let playername of playersOrder) {
-    players.set(playername, new Player());
-}
-// If there are fewer than 6 players, cards are split evenly, 3 are put into envelope, 
-// and excess cards are shown to public. Assign them to a "publiclyKnown" player, but 
-// don't add that player into the playersOrder
-const PUBLICLY_KNOWN = "publiclyKnown";
-players.set(PUBLICLY_KNOWN, new Player(true, false));
-
-// test of clues
-players.get("Me").showed.push(["plum", "green", "white"])
-players.get("Me").lacks["plum"] = true
-players.get("Me").clues()
 
 
 currentIndex = 0; // your turn
