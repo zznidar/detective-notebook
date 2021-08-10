@@ -38,19 +38,21 @@ class Player {
 }
 
 class Round {
-    constructor(caller, calledGuest, calledWeapon, calledRoom, witness = undefined, card = undefined) {
+    constructor(caller, calledCards, witness = undefined, card = undefined) {
         this.caller = caller;
-        this.calledGuest = calledGuest;
-        this.calledWeapon = calledWeapon;
-        this.calledRoom = calledRoom;
+        this.calledCards = calledCards;
         this.witness = witness;
         this.card = card;    
     }
 }
 
+function writeRound(r) {
+    rounds.push(r);
+}
+
 function* order() {
     //let playersOrder = players.keys();
-    let NPlayers = playersOrder.length;
+    NPlayers = playersOrder.length;
     let current = 0;
 
     while(true) {
@@ -69,12 +71,28 @@ function knownCard(player, card) {
     }
 }
 
+function holdsCards(player, cards, really) {
+    if(really) {
+        players.get(player).showed.push(cards);
+    } else {
+        for(c of cards) {
+            players.get(player).lacks[c] = true;
+            players.get(player).holds[c] = false;
+        }
+    }
+}
+
 function init(inNames, inNCards) {
     alert(inNames + inNCards);
-    playersOrder = new Set(inNames.split(","));
+    playersOrder = inNames.split(",");
     for(let playername of playersOrder) {
         players.set(playername, new Player());
     }
+
+    currentIndex = 0; // your turn
+    const playerGen = order();
+    currentPlayer = playerGen.next().value;
+
 
     // If there are fewer than 6 players, cards are split evenly, 3 are put into envelope, 
     // and excess cards are shown to public. Assign them to a "publiclyKnown" player, but 
@@ -88,4 +106,3 @@ const players = new Map(); // Array of players added in order, starting with you
 
 
 
-currentIndex = 0; // your turn

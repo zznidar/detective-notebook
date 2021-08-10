@@ -56,6 +56,11 @@
 
     <div id="Turn" class="turn hidden">
         <h1 id="who">Someone's turn</h1>
+        <p>Select the cards that were called</p>
+        <!-- Cards here -->
+        <p id="TurnUserText">Select the first user that showed a card</p>
+        <!-- Users here -->
+        <input type="button" value="Confirm!" id="TurnUserTextConfirm" onclick="confirmNewTurn()">
     </div>
 
 
@@ -102,6 +107,8 @@
         var YourCardsL = document.getElementById("YourCards");
         var UsersL = document.getElementById("Users");
         var NewKnownCardL = document.getElementById("NewKnownCard");
+        var TurnL = document.getElementById("Turn");
+        var whoT = document.getElementById("who");
         // Show settings
 
         SettingsL.classList.remove("hidden");
@@ -133,9 +140,9 @@
         }
 
         function confirmYourCards() {
-            for({id} of CardsL.getElementsByClassName("selected")) {
+            for(let {id} of CardsL.getElementsByClassName("selected")) {
                 console.log(id);
-                knownCard(order(-1), id);
+                knownCard(currentPlayer, id);
             }
             clearSelection();
             YourCardsL.classList.add("hidden");
@@ -143,6 +150,7 @@
         }
 
         function newCards() {
+            TurnL.classList.add("hidden");
             NewKnownCardL.append(UsersL, document.getElementById("NewKnownCardsText"), CardsL, document.getElementById("NewKnownCardConfirm"));
             NewKnownCardL.classList.remove("hidden");
             CardsL.classList.remove("hidden");
@@ -150,12 +158,47 @@
         }
 
         function confirmNewCards() {
-            let user = UsersL.getElementsByClassName("selected")[0].dataset.player;
+            let user = UsersL.getElementsByClassName("selected")[0]?.dataset.player;
             if(UsersL.getElementsByClassName("selected").length != 1) alert("You have messed up the whole thing 😔\nOnly one user should have been selected ...");
-            for({id} of CardsL.getElementsByClassName("selected")) {
+            for(let {id} of CardsL.getElementsByClassName("selected")) {
                 console.log(id);
                 knownCard(user, id);
             }
+            clearSelection();
+            NewKnownCardL.classList.add("hidden");
+            newTurn();
+        }
+
+        function newTurn() {
+            whoT.innerText = `${currentPlayer}'s turn`;
+            TurnL.append(CardsL, document.getElementById("TurnUserText"), UsersL, document.getElementById("TurnUserTextConfirm"));
+            TurnL.classList.remove("hidden");
+        }
+
+        function confirmNewTurn() {
+            let witness = UsersL.getElementsByClassName("selected")[0]?.dataset.player; // Who showed a card
+            let called = [];
+            for(let {id} of CardsL.getElementsByClassName("selected")) {
+                console.log(id);
+                called.push(id);
+            }
+
+            let showerGen = order();
+            //showerGen.next(); // Yield input value is ignored the first time
+            let shower = showerGen.next(currentPlayer).value; // Just goes around until it reaches the one you selected
+            console.warn("THIS");
+            for(let i = 0; i < NPlayers; i++) {
+                if(shower == witness) {
+                    holdsCards(shower, called, true);
+                    break;
+                } else {
+                    holdsCards(shower, called, false);
+                    shower = showerGen.next().value;
+                }
+                console.log(shower, witness);
+                console.assert(shower != currentPlayer, "Loops too many times! It should exit _before_ coming around");
+            }
+            writeRound(new Round(currentPlayer, called, witness));
             clearSelection();
         }
 
