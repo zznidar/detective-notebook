@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detective notebook</title>
+</head>
+<body>
+    <h1>Detective Notebook</h1>
+    <div id="Settings" class="settings">
+        <!-- Div containing all settings (enter player names, how many cards, names of cards ...) -->
+        <p>Players in order, starting with yourself (comma-separated):</p>
+        <input style="width: 90%;" placeholder="Player names" id="inNames"><br>
+        <p>Each player has <input type="number" min="1" max="30" id="inNCards"> cards</p><br>
+        <input type="button" value="Confirm!" onclick='init(
+            document.getElementById("inNames").value, 
+            document.getElementById("inNCards").value)'>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
