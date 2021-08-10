@@ -92,7 +92,7 @@ function init(inNames, inNCards) {
     }
 
     currentIndex = 0; // your turn
-    const playerGen = order();
+    playerGen = order();
     currentPlayer = playerGen.next().value;
 
 
@@ -101,6 +101,11 @@ function init(inNames, inNCards) {
     // don't add that player into the playersOrder
     const PUBLICLY_KNOWN = "publiclyKnown";
     players.set(PUBLICLY_KNOWN, new Player(PUBLICLY_KNOWN, true, false));
+}
+
+function nextRound() {
+    currentIndex++;
+    currentPlayer = playerGen.next().value;
 }
 
 rounds = []; // Array of all rounds

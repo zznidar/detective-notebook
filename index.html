@@ -147,6 +147,7 @@
             clearSelection();
             YourCardsL.classList.add("hidden");
             document.getElementById("plus").classList.remove("hidden");
+            newTurn();
         }
 
         function newCards() {
@@ -173,10 +174,13 @@
             whoT.innerText = `${currentPlayer}'s turn`;
             TurnL.append(CardsL, document.getElementById("TurnUserText"), UsersL, document.getElementById("TurnUserTextConfirm"));
             TurnL.classList.remove("hidden");
+            CardsL.classList.remove("hidden");
+            UsersL.classList.remove("hidden");
         }
 
         function confirmNewTurn() {
             let witness = UsersL.getElementsByClassName("selected")[0]?.dataset.player; // Who showed a card
+            if(UsersL.getElementsByClassName("selected").length > 1) alert("You have messed up the whole thing 😔\nOnly one user should have been selected ...");
             let called = [];
             for(let {id} of CardsL.getElementsByClassName("selected")) {
                 console.log(id);
@@ -184,10 +188,12 @@
             }
 
             let showerGen = order();
-            //showerGen.next(); // Yield input value is ignored the first time
-            let shower = showerGen.next(currentPlayer).value; // Just goes around until it reaches the one you selected
+            showerGen.next(); // Yield input value is ignored the first time
+            let shower = showerGen.next(currentIndex).value; // Just goes around until it reaches the one you selected
             console.warn("THIS");
             for(let i = 1; i < NPlayers; i++) {
+                console.log(shower, witness);
+                console.assert(shower != currentPlayer, "Loops too many times! It should exit _before_ coming around");
                 if(shower == witness) {
                     holdsCards(shower, called, true);
                     break;
@@ -195,11 +201,12 @@
                     holdsCards(shower, called, false);
                     shower = showerGen.next().value;
                 }
-                console.log(shower, witness);
-                console.assert(shower != currentPlayer, "Loops too many times! It should exit _before_ coming around");
             }
             writeRound(new Round(currentPlayer, called, witness));
             clearSelection();
+
+            nextRound();
+            newTurn();
         }
 
     </script>
