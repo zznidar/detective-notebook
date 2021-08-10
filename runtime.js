@@ -62,9 +62,18 @@ function* order() {
     }
 }
 
+function knownCard(player, card) {
+    for(const [playerName, hand] of players) {
+        hand.lacks[card] = !(playerName == player);
+        hand.holds[card] = (playerName == player);
+    }
+}
+
 rounds = []; // Array of all rounds
 const players = new Map(); // Array of players added in order, starting with yourself
 
+// Put this inside an init(players) function
+// Maybe some sort of playersOrder = new Set(players.split(",")) for faster input of player names
 playersOrder = ["Me", "Player1", "Player2", "Player3", "Player4", "Player5"];
 for(let playername of playersOrder) {
     players.set(playername, new Player());
