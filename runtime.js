@@ -3,25 +3,25 @@ weapons = ["knife", "candlestick", "pistol", "poison", "rope", "dumbbell"];
 rooms = ["hall", "dinningRoom", "kitchen", "patio", "observatory", "theatre", "livingRoom", "spa", "guestHouse"];
 
 class Cards {
-    constructor() {
+    constructor(defaultState = undefined) {
         for(let g of guests) {
-            this[g] = undefined;
+            this[g] = defaultState;
         }
         
         for(let w of weapons) {
-            this[w] = undefined;
+            this[w] = defaultState;
         }
         
         for(let r of rooms) {
-            this[r] = undefined;
+            this[r] = defaultState;
         }
     }
 }
 
 class Player {
-    constructor() {
-        this.lacks = new Cards();
-        this.holds = new Cards();
+    constructor(defaultLacks = undefined, defaultHolds = undefined) {
+        this.lacks = new Cards(defaultLacks);
+        this.holds = new Cards(defaultHolds);
         this.showed = [];
     }
 
@@ -78,8 +78,16 @@ playersOrder = ["Me", "Player1", "Player2", "Player3", "Player4", "Player5"];
 for(let playername of playersOrder) {
     players.set(playername, new Player());
 }
+// If there are fewer than 6 players, cards are split evenly, 3 are put into envelope, 
+// and excess cards are shown to public. Assign them to a "publiclyKnown" player, but 
+// don't add that player into the playersOrder
+const PUBLICLY_KNOWN = "publiclyKnown";
+players.set(PUBLICLY_KNOWN, new Player(true, false));
 
 // test of clues
 players.get("Me").showed.push(["plum", "green", "white"])
 players.get("Me").lacks["plum"] = true
 players.get("Me").clues()
+
+
+currentIndex = 0; // your turn
