@@ -63,6 +63,17 @@
         <input type="button" value="Confirm!" id="TurnUserTextConfirm" onclick="confirmNewTurn()">
     </div>
 
+    <div id="Notebook" class="notebook hidden">
+        <h1>Notebook grid</h1>
+        <table>
+            <thead id="NoteHead">
+                <tr id="tableRowPlaceholder"><th id="tableHeaderPlaceholder">Card / User</th></tr>
+            </thead>
+            <tbody id="NoteTable">
+            </tbody>
+        </table>
+    </div>
+
 
 
 
@@ -71,25 +82,62 @@
     <script> /* CARDS BUTTON GENERATOR */
         // Must be after loading script.js because it uses card arrays from there
         const buttonCardPlaceholder = document.getElementById("buttonCardPlaceholder");
+        const tableRowPlaceholder = document.getElementById("tableRowPlaceholder");
+        const NoteTable = document.getElementById("NoteTable");
+        const NoteHead = document.getElementById("NoteHead");
+        const tableHeaderPlaceholder = document.getElementById("tableHeaderPlaceholder");
+        const NoteTableHeader = document.getElementById("NoteTableHeader");
+        let tdPlaceholder = document.createElement("td");
+        
         function generateCardsUsers() {
             for(let g of guests) {
                 let gb = buttonCardPlaceholder.cloneNode();
                 gb.style.display = "inline-block";
                 gb.id = gb.value = g;
                 document.getElementById("Guests").appendChild(gb);
+
+                let tr = tableRowPlaceholder.cloneNode();
+                tr.attributes.removeNamedItem("id");
+                let td = tdPlaceholder.cloneNode();
+                td.innerText = g;
+                tr.appendChild(td);
+                NoteTable.appendChild(tr);
             }
+            // Add a table divider
+            NoteTable.lastElementChild.classList.add("border_bottom");
+            
             for(let w of weapons) {
                 let wb = buttonCardPlaceholder.cloneNode();
                 wb.style.display = "inline-block";
                 wb.id = wb.value = w;
                 document.getElementById("Weapons").appendChild(wb);
+
+                let tr = tableRowPlaceholder.cloneNode();
+                tr.attributes.removeNamedItem("id");
+                let td = tdPlaceholder.cloneNode();
+                td.innerText = w;
+                tr.appendChild(td);
+                NoteTable.appendChild(tr);
             }
+            // Add a table divider
+            NoteTable.lastElementChild.classList.add("border_bottom");
+
+            
             for(let r of rooms) {
                 let rb = buttonCardPlaceholder.cloneNode();
                 rb.style.display = "inline-block";
                 rb.id = rb.value = r;
                 document.getElementById("Rooms").appendChild(rb);
+
+                let tr = tableRowPlaceholder.cloneNode();
+                tr.attributes.removeNamedItem("id");
+                let td = tdPlaceholder.cloneNode();
+                td.innerText = r;
+                tr.appendChild(td);
+                NoteTable.appendChild(tr);
             }
+            // Add a table divider
+            NoteTable.lastElementChild.classList.add("border_bottom");
 
             for(let [n, d] of players) {
                 let nb = buttonCardPlaceholder.cloneNode();
@@ -98,6 +146,11 @@
                 nb.attributes.removeNamedItem("id"); // We don't need IDs as we have data-player
                                 // TODO: Maybe we should move IDs to data-card with cards as well.
                 document.getElementById("Users").appendChild(nb);
+
+                let th = tableHeaderPlaceholder.cloneNode();
+                th.attributes.removeNamedItem("id");
+                th.innerText = n;
+                tableRowPlaceholder.appendChild(th);
             }
         }
     </script>

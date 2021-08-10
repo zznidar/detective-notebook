@@ -11,3 +11,7 @@
 #plus {
     margin-left: auto;
 }
+
+tr.border_bottom td {
+    border-bottom: 1px solid red;
+  }
