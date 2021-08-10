@@ -2,4 +2,12 @@
 
 .hidden { display: none; }
 
-/* Should we need visibility: hidden, call it invisible /*
+/* Should we need visibility: hidden, call it invisible */
+
+.header {
+    display: flex;
+}
+
+#plus {
+    margin-left: auto;
+}

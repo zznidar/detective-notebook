@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Detective Notebook</h1>
+    <div class="header">
+        <h1>Detective Notebook</h1><input type="button" id="plus" value="+ New known card" onclick="newCards()">
+
+    </div>
     <div id="Settings" class="settings">
         <!-- Div containing all settings (enter player names, how many cards, names of cards ...) -->
         <p>Players in order, starting with yourself (comma-separated):</p>
@@ -32,39 +35,73 @@
         </div>
     </div>
 
+    <div id="Users" class="users hidden">
+        <h1>Users</h1>
+    </div>
+
     <div id="YourCards" class="settings hidden">
         <h1>Your cards</h1>
         <p>Select the cards you have in hands.</p>
+        <!-- Cards here -->
         <input type="button" value="Confirm!" id="YourCardsConfirm" onclick="confirmYourCards()">
     </div>
+
+    <div id="NewKnownCard" class="hidden">
+        <h1>New known card</h1>
+        <p>Select the player whose card you newly know</p>
+        <!-- Users here -->
+        <p id="NewKnownCardsText">Select new known cards</p>
+        <input type="button" value="Confirm!" id="NewKnownCardConfirm" onclick="confirmNewCards()">
+    </div>
+
+    <div id="Turn" class="turn hidden">
+        <h1 id="who">Someone's turn</h1>
+    </div>
+
+
+
+
 
     <script src="script.js"></script>
     <script> /* CARDS BUTTON GENERATOR */
         // Must be after loading script.js because it uses card arrays from there
         const buttonCardPlaceholder = document.getElementById("buttonCardPlaceholder");
-        for(let g of guests) {
-            let gb = buttonCardPlaceholder.cloneNode();
-            gb.style.display = "inline-block";
-            gb.id = gb.value = g;
-            document.getElementById("Guests").appendChild(gb);
-        }
-        for(let w of weapons) {
-            let wb = buttonCardPlaceholder.cloneNode();
-            wb.style.display = "inline-block";
-            wb.id = wb.value = w;
-            document.getElementById("Weapons").appendChild(wb);
-        }
-        for(let r of rooms) {
-            let rb = buttonCardPlaceholder.cloneNode();
-            rb.style.display = "inline-block";
-            rb.id = rb.value = r;
-            document.getElementById("Rooms").appendChild(rb);
+        function generateCardsUsers() {
+            for(let g of guests) {
+                let gb = buttonCardPlaceholder.cloneNode();
+                gb.style.display = "inline-block";
+                gb.id = gb.value = g;
+                document.getElementById("Guests").appendChild(gb);
+            }
+            for(let w of weapons) {
+                let wb = buttonCardPlaceholder.cloneNode();
+                wb.style.display = "inline-block";
+                wb.id = wb.value = w;
+                document.getElementById("Weapons").appendChild(wb);
+            }
+            for(let r of rooms) {
+                let rb = buttonCardPlaceholder.cloneNode();
+                rb.style.display = "inline-block";
+                rb.id = rb.value = r;
+                document.getElementById("Rooms").appendChild(rb);
+            }
+
+            for(let [n, d] of players) {
+                let nb = buttonCardPlaceholder.cloneNode();
+                nb.style.display = "inline-block";
+                nb.dataset.player = nb.value = n;
+                nb.attributes.removeNamedItem("id"); // We don't need IDs as we have data-player
+                                // TODO: Maybe we should move IDs to data-card with cards as well.
+                document.getElementById("Users").appendChild(nb);
+            }
         }
     </script>
     <script> /* GUIDE THROUGH STEPS */
         var SettingsL = document.getElementById("Settings");
         var CardsL = document.getElementById("Cards");
         var YourCardsL = document.getElementById("YourCards");
+        var UsersL = document.getElementById("Users");
+        var NewKnownCardL = document.getElementById("NewKnownCard");
         // Show settings
 
         SettingsL.classList.remove("hidden");
@@ -72,11 +109,20 @@
                         
         })*/
 
+        function clearSelection() {
+            // HTMLcollection needs to be spread into an array
+            // or else it shrinks while removing the selected class
+            for(let s of [...document.getElementsByClassName("selected")]) {
+                s.classList.remove("selected");
+            }
+        }
+
         function confirmSettings() {
             init(
                 document.getElementById("inNames").value, 
                 document.getElementById("inNCards").value)
             SettingsL.classList.add("hidden");
+            generateCardsUsers();
             yourCards();
         }
 
@@ -87,9 +133,30 @@
         }
 
         function confirmYourCards() {
-            for({id} of document.getElementsByClassName("selected")) {
+            for({id} of CardsL.getElementsByClassName("selected")) {
                 console.log(id);
+                knownCard(order(-1), id);
             }
+            clearSelection();
+            YourCardsL.classList.add("hidden");
+            document.getElementById("plus").classList.remove("hidden");
+        }
+
+        function newCards() {
+            NewKnownCardL.append(UsersL, document.getElementById("NewKnownCardsText"), CardsL, document.getElementById("NewKnownCardConfirm"));
+            NewKnownCardL.classList.remove("hidden");
+            CardsL.classList.remove("hidden");
+            UsersL.classList.remove("hidden");
+        }
+
+        function confirmNewCards() {
+            let user = UsersL.getElementsByClassName("selected")[0].dataset.player;
+            if(UsersL.getElementsByClassName("selected").length != 1) alert("You have messed up the whole thing 😔\nOnly one user should have been selected ...");
+            for({id} of CardsL.getElementsByClassName("selected")) {
+                console.log(id);
+                knownCard(user, id);
+            }
+            clearSelection();
         }
 
     </script>
