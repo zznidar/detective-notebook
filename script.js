@@ -19,7 +19,8 @@ class Cards {
 }
 
 class Player {
-    constructor(defaultLacks = undefined, defaultHolds = undefined) {
+    constructor(name, defaultLacks = undefined, defaultHolds = undefined) {
+        this.name = name;
         this.lacks = new Cards(defaultLacks);
         this.holds = new Cards(defaultHolds);
         this.showed = [];
@@ -33,6 +34,7 @@ class Player {
             // Find possible holds for each round
             clues.push(t.filter((el) => { return !this.lacks[el] }));
         }
+        helper.push(`${this.name}: `);
         return(clues);
     }
 }
@@ -86,7 +88,7 @@ function init(inNames, inNCards) {
     alert(inNames + inNCards);
     playersOrder = inNames.split(",");
     for(let playername of playersOrder) {
-        players.set(playername, new Player());
+        players.set(playername, new Player(playername));
     }
 
     currentIndex = 0; // your turn
@@ -98,11 +100,12 @@ function init(inNames, inNCards) {
     // and excess cards are shown to public. Assign them to a "publiclyKnown" player, but 
     // don't add that player into the playersOrder
     const PUBLICLY_KNOWN = "publiclyKnown";
-    players.set(PUBLICLY_KNOWN, new Player(true, false));
+    players.set(PUBLICLY_KNOWN, new Player(PUBLICLY_KNOWN, true, false));
 }
 
 rounds = []; // Array of all rounds
 const players = new Map(); // Array of players added in order, starting with yourself
 
-
+helper = new Set(); // Contains clues/suggestions once known
+// Show helper log: [...helper].join("\n");
 

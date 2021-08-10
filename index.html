@@ -187,7 +187,7 @@
             //showerGen.next(); // Yield input value is ignored the first time
             let shower = showerGen.next(currentPlayer).value; // Just goes around until it reaches the one you selected
             console.warn("THIS");
-            for(let i = 0; i < NPlayers; i++) {
+            for(let i = 1; i < NPlayers; i++) {
                 if(shower == witness) {
                     holdsCards(shower, called, true);
                     break;
