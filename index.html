@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detective notebook</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Detective Notebook</h1>
@@ -13,11 +14,84 @@
         <p>Players in order, starting with yourself (comma-separated):</p>
         <input style="width: 90%;" placeholder="Player names" id="inNames"><br>
         <p>Each player has <input type="number" min="1" max="30" id="inNCards"> cards</p><br>
-        <input type="button" value="Confirm!" onclick='init(
-            document.getElementById("inNames").value, 
-            document.getElementById("inNCards").value)'>
+        <input type="button" value="Confirm!" class="confirm" onclick="confirmSettings()">
+    </div>
+
+    <div id="Cards" class="cards hidden">
+        <h1>Cards</h1>
+        <div id="Guests">
+            <h2>Guest</h2>
+            <input type="button" value="placeholder" id="buttonCardPlaceholder" onclick="this.classList.toggle('selected')"
+            style="display: none;">
+        </div>
+        <div id="Weapons">
+            <h2>Weapon</h2>
+        </div>
+        <div id="Rooms">
+            <h2>Room</h2>
+        </div>
+    </div>
+
+    <div id="YourCards" class="settings hidden">
+        <h1>Your cards</h1>
+        <p>Select the cards you have in hands.</p>
+        <input type="button" value="Confirm!" id="YourCardsConfirm" onclick="confirmYourCards()">
     </div>
 
     <script src="script.js"></script>
+    <script> /* CARDS BUTTON GENERATOR */
+        // Must be after loading script.js because it uses card arrays from there
+        const buttonCardPlaceholder = document.getElementById("buttonCardPlaceholder");
+        for(let g of guests) {
+            let gb = buttonCardPlaceholder.cloneNode();
+            gb.style.display = "inline-block";
+            gb.id = gb.value = g;
+            document.getElementById("Guests").appendChild(gb);
+        }
+        for(let w of weapons) {
+            let wb = buttonCardPlaceholder.cloneNode();
+            wb.style.display = "inline-block";
+            wb.id = wb.value = w;
+            document.getElementById("Weapons").appendChild(wb);
+        }
+        for(let r of rooms) {
+            let rb = buttonCardPlaceholder.cloneNode();
+            rb.style.display = "inline-block";
+            rb.id = rb.value = r;
+            document.getElementById("Rooms").appendChild(rb);
+        }
+    </script>
+    <script> /* GUIDE THROUGH STEPS */
+        var SettingsL = document.getElementById("Settings");
+        var CardsL = document.getElementById("Cards");
+        var YourCardsL = document.getElementById("YourCards");
+        // Show settings
+
+        SettingsL.classList.remove("hidden");
+        /*let next = Settings.getElementsByClassName("confirm")[0].addEventListener("click", (e) => {
+                        
+        })*/
+
+        function confirmSettings() {
+            init(
+                document.getElementById("inNames").value, 
+                document.getElementById("inNCards").value)
+            SettingsL.classList.add("hidden");
+            yourCards();
+        }
+
+        function yourCards() {
+            YourCardsL.append(CardsL, document.getElementById("YourCardsConfirm"));
+            YourCardsL.classList.remove("hidden");
+            CardsL.classList.remove("hidden");
+        }
+
+        function confirmYourCards() {
+            for({id} of document.getElementsByClassName("selected")) {
+                console.log(id);
+            }
+        }
+
+    </script>
 </body>
 </html>

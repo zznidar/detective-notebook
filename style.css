@@ -1,0 +1,5 @@
+.selected { background-color: lightblue; }
+
+.hidden { display: none; }
+
+/* Should we need visibility: hidden, call it invisible /*
