@@ -185,6 +185,9 @@
                 s.classList.remove("selected");
             }
             updateTable();
+            updateClues(); // TODO: This should be called asynchronously
+                    // as it will take a lot of time once all clues are implemented.
+                    // Probably it should be run multi-threaded in webworkers, anyway
         }
 
         function confirmSettings() {

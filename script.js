@@ -124,6 +124,12 @@ function nextRound() {
     currentPlayer = playerGen.next().value;
 }
 
+function updateClues() {
+    for([n, p] of players) {
+        p.clues();
+    }
+}
+
 rounds = []; // Array of all rounds
 const players = new Map(); // Array of players added in order, starting with yourself
 
