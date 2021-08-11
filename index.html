@@ -178,6 +178,7 @@
             for(let s of [...document.getElementsByClassName("selected")]) {
                 s.classList.remove("selected");
             }
+            updateTable();
         }
 
         function confirmSettings() {
@@ -197,7 +198,7 @@
 
         function confirmYourCards() {
             for(let {id} of CardsL.getElementsByClassName("selected")) {
-                console.log(id);
+                //console.log(id);
                 knownCard(currentPlayer, id);
             }
             clearSelection();
@@ -218,7 +219,7 @@
             let user = UsersL.getElementsByClassName("selected")[0]?.dataset.player;
             if(UsersL.getElementsByClassName("selected").length != 1) alert("You have messed up the whole thing 😔\nOnly one user should have been selected ...");
             for(let {id} of CardsL.getElementsByClassName("selected")) {
-                console.log(id);
+                //console.log(id);
                 knownCard(user, id);
             }
             clearSelection();
@@ -239,7 +240,7 @@
             if(UsersL.getElementsByClassName("selected").length > 1) alert("You have messed up the whole thing 😔\nOnly one user should have been selected ...");
             let called = [];
             for(let {id} of CardsL.getElementsByClassName("selected")) {
-                console.log(id);
+                //console.log(id);
                 called.push(id);
             }
 
@@ -248,7 +249,7 @@
             let shower = showerGen.next(currentIndex).value; // Just goes around until it reaches the one you selected
             console.warn("THIS");
             for(let i = 1; i < NPlayers; i++) {
-                console.log(shower, witness);
+                //console.log(shower, witness);
                 console.assert(shower != currentPlayer, "Loops too many times! It should exit _before_ coming around");
                 if(shower == witness) {
                     holdsCards(shower, called, true);
@@ -267,7 +268,6 @@
 
         function updateTable() {
             for(let u of [...NoteTable.getElementsByClassName("updatable")]) {
-                console.log(u);
                 u.remove();
             }
             let rows = NoteTable.getElementsByTagName("tr");
@@ -277,6 +277,7 @@
                     //console.log(n, lacking);
                     let td = tdPlaceholder.cloneNode();
                     td.classList.add("updatable"); // so that we know which elements to delete and re-create on update
+                    td.classList.add("center")
                     if(lacking === true) {
                         td.innerText = "❌";
                     } else if(lacking === false) {

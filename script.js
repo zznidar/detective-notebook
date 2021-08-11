@@ -34,7 +34,14 @@ class Player {
             // Find possible holds for each round
             clues.push(t.filter((el) => { return !this.lacks[el] }));
         }
-        helper.add(`${this.name}: `);
+
+        for(let c of clues) {
+            if(c.length == 1) {
+                knownCard(this.name, c[0]);
+                helper.add(`${this.name}: Once showed 3 cards, now 2 of them are knowingly lacked; holds ${c[0]}`);
+            }
+        }
+
         return(clues);
     }
 }
@@ -58,11 +65,11 @@ function* order() {
     let current = 0;
 
     while(true) {
-        console.log("plO : ", playersOrder);
+        //console.log("plO : ", playersOrder);
         let jump = yield playersOrder[current];
         if(!isNaN(jump)) current = jump;
         current = (++current)%NPlayers;
-        console.log(current);
+        //console.log(current);
     }
 }
 
@@ -71,6 +78,7 @@ function knownCard(player, card) {
         hand.lacks[card] = !(playerName == player);
         hand.holds[card] = (playerName == player);
     }
+    updateTable();
 }
 
 function holdsCards(player, cards, really) {
