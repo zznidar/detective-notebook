@@ -63,7 +63,7 @@
         <input type="button" value="Confirm!" id="TurnUserTextConfirm" onclick="confirmNewTurn()">
     </div>
 
-    <div id="Notebook" class="notebook hidden">
+    <div id="Notebook" class="notebook ">
         <h1>Notebook grid</h1>
         <table>
             <thead id="NoteHead">
@@ -98,6 +98,7 @@
 
                 let tr = tableRowPlaceholder.cloneNode();
                 tr.attributes.removeNamedItem("id");
+                tr.dataset.card = g;
                 let td = tdPlaceholder.cloneNode();
                 td.innerText = g;
                 tr.appendChild(td);
@@ -114,6 +115,7 @@
 
                 let tr = tableRowPlaceholder.cloneNode();
                 tr.attributes.removeNamedItem("id");
+                tr.dataset.card = w;
                 let td = tdPlaceholder.cloneNode();
                 td.innerText = w;
                 tr.appendChild(td);
@@ -131,6 +133,7 @@
 
                 let tr = tableRowPlaceholder.cloneNode();
                 tr.attributes.removeNamedItem("id");
+                tr.dataset.card = r;
                 let td = tdPlaceholder.cloneNode();
                 td.innerText = r;
                 tr.appendChild(td);
@@ -260,6 +263,30 @@
 
             nextRound();
             newTurn();
+        }
+
+        function updateTable() {
+            for(let u of [...NoteTable.getElementsByClassName("updatable")]) {
+                console.log(u);
+                u.remove();
+            }
+            let rows = NoteTable.getElementsByTagName("tr");
+            for(let [n, p] of players) {
+                for(row of rows) {
+                    let lacking = p.lacks[row.dataset.card];
+                    //console.log(n, lacking);
+                    let td = tdPlaceholder.cloneNode();
+                    td.classList.add("updatable"); // so that we know which elements to delete and re-create on update
+                    if(lacking === true) {
+                        td.innerText = "❌";
+                    } else if(lacking === false) {
+                        td.innerText = "✔";
+                    } else if(lacking === undefined) {
+                        // nothing to do, for now
+                    }
+                    row.appendChild(td);
+                }
+            }
         }
 
     </script>

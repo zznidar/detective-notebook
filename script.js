@@ -34,7 +34,7 @@ class Player {
             // Find possible holds for each round
             clues.push(t.filter((el) => { return !this.lacks[el] }));
         }
-        helper.push(`${this.name}: `);
+        helper.add(`${this.name}: `);
         return(clues);
     }
 }
