@@ -74,6 +74,11 @@
         </table>
     </div>
 
+    <div id="Helper" class="helper ">
+        <h1>Helper info</h1>
+        <p id="HelperText"></p>
+    </div>
+
 
 
 
@@ -165,6 +170,7 @@
         var NewKnownCardL = document.getElementById("NewKnownCard");
         var TurnL = document.getElementById("Turn");
         var whoT = document.getElementById("who");
+        var HelperText = document.getElementById("HelperText");
         // Show settings
 
         SettingsL.classList.remove("hidden");
@@ -288,6 +294,9 @@
                     row.appendChild(td);
                 }
             }
+
+            // We'll also update our helper here
+            HelperText.innerText = [...helper].join("\n");
         }
 
     </script>

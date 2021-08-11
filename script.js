@@ -24,6 +24,7 @@ class Player {
         this.lacks = new Cards(defaultLacks);
         this.holds = new Cards(defaultHolds);
         this.showed = [];
+        this.helped = [];
     }
 
     clues() {
@@ -37,8 +38,15 @@ class Player {
 
         for(let c of clues) {
             if(c.length == 1) {
-                knownCard(this.name, c[0]);
-                helper.add(`${this.name}: Once showed 3 cards, now 2 of them are knowingly lacked; holds ${c[0]}`);
+                // Once showed 3 cards, now 2 of them are knowingly lacked
+                if(!this.helped.includes(c[0])) {
+                    // This is the first time this clue was suggested by our super-smart AI
+                    this.helped.push(c[0]);
+                    helper.add(`${this.name}: Once showed 3 cards, now 2 of them are knowingly lacked; holds ${c[0]}${
+                        this.lacks[c[0]] === false ? " (though this was already known)" : ""
+                    }.`);
+                    knownCard(this.name, c[0]);
+                }
             }
         }
 
