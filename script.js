@@ -23,17 +23,23 @@ class Player {
         this.name = name;
         this.lacks = new Cards(defaultLacks);
         this.holds = new Cards(defaultHolds);
-        this.showed = [];
+        this.showed = []; // Would it be better if this was not an array of arrays but rather a 1D array,
+                // then we would read 3-by-3 elements at once? (NCards-by-NCards)
         this.helped = [];
     }
 
     clues() {
         let clues = [];
+        let lasko = []; // Add elemets, later dedupe them to get union
+
         // We know for each round the cards called.
         // Combine this knowledge wih lacking cards to determine possible holds.
         for(let t of this.showed) {
             // Find possible holds for each round
             clues.push(t.filter((el) => { return !this.lacks[el] }));
+
+            // Prepare for union
+            lasko.push(...t);
         }
 
         for(let c of clues) {
@@ -49,6 +55,28 @@ class Player {
                 }
             }
         }
+
+        let union = new Set(lasko);
+        console.log(lasko, union);
+        if(union.size >= 3*NCards) {
+            // player lacks all cards outside of the union
+            // Actually, we could test combinations of unions of _NCards_ shows.
+                // This should give us more information. TOBEDONE
+            for(let l of Object.keys(this.lacks)) {
+                if(!union.has(l)) {
+                    // Card is outside union; player lacks it for sure
+                    this.lacks[l] = true;
+                    this.holds[l] = false;
+                }
+            }
+            helper.add(`${this.name}: Showed ${NCards} of ${union.size} unique cards; Lacks all cards outside of [${
+                [...union].join(", ")
+            }].`);
+
+            updateTable();
+        }
+
+        
 
         return(clues);
     }
@@ -102,6 +130,7 @@ function holdsCards(player, cards, really) {
 
 function init(inNames, inNCards) {
     alert(inNames + inNCards);
+    NCards = Number(inNCards);
     playersOrder = inNames.split(",");
     for(let playername of playersOrder) {
         players.set(playername, new Player(playername));
