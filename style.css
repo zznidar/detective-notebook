@@ -13,9 +13,58 @@
 }
 
 tr.border_bottom td {
-    border-bottom: 1px solid red;
+    border-bottom: 2px solid black;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    border: 1px solid silver;
 }
 
 .center {
     text-align: center;
+}
+
+input[type=button] {
+    /* All buttons should be easily tappable, but not neighbour-mistapable */
+    font-size: 1em;
+    padding: 0.5em;
+    margin: 0.5em;
+}
+
+input.confirm {
+    /* Confirm buttons should all look the same */
+    margin-top: 1em;
+    font-weight: bold;
+}
+
+.turn {
+    background-color: #ffffdf;
+    border: #8d8d7b solid 4px; /* or maybe 0.35em; */
+}
+
+/*
+.cards {
+    background-color: antiquewhite;
+    border: #ffa835 dashed 4px;
+}
+*/
+
+.newcard {
+    background-color: #cbd6b9;
+    border: #8a947a dashed 4px;
+}
+
+.helper {
+    background-color: #c6e5ff;
+    border: #5e9fd5 dotted 4px;
+    margin-top: 1em;
+}
+
+.helper>h1 {
+    color: #0062b3;
+    margin: 0.3em;
 }

@@ -7,12 +7,12 @@
     <title>Detective notebook</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="center">
     <div class="header">
-        <h1>Detective Notebook</h1><input type="button" id="plus" value="+ New known card" onclick="newCards()">
+        <h1>Detective Notebook</h1><input type="button" class="hidden" id="plus" value="+ New known card" onclick="newCards()">
 
     </div>
-    <div id="Settings" class="settings">
+    <div id="Settings" class="settings center">
         <!-- Div containing all settings (enter player names, how many cards, names of cards ...) -->
         <p>Players in order, starting with yourself (comma-separated):</p>
         <input style="width: 90%;" placeholder="Player names" id="inNames"><br>
@@ -43,15 +43,15 @@
         <h1>Your cards</h1>
         <p>Select the cards you have in hands.</p>
         <!-- Cards here -->
-        <input type="button" value="Confirm!" id="YourCardsConfirm" onclick="confirmYourCards()">
+        <input type="button" value="Confirm!" class="confirm" id="YourCardsConfirm" onclick="confirmYourCards()">
     </div>
 
-    <div id="NewKnownCard" class="hidden">
+    <div id="NewKnownCard" class="newcard hidden">
         <h1>New known card</h1>
         <p>Select the player whose card you newly know</p>
         <!-- Users here -->
         <p id="NewKnownCardsText">Select new known cards</p>
-        <input type="button" value="Confirm!" id="NewKnownCardConfirm" onclick="confirmNewCards()">
+        <input type="button" value="Confirm!" class="confirm" id="NewKnownCardConfirm" onclick="confirmNewCards()">
     </div>
 
     <div id="Turn" class="turn hidden">
@@ -60,10 +60,10 @@
         <!-- Cards here -->
         <p id="TurnUserText">Select the first user that showed a card</p>
         <!-- Users here -->
-        <input type="button" value="Confirm!" id="TurnUserTextConfirm" onclick="confirmNewTurn()">
+        <input type="button" value="Confirm!" class="confirm" id="TurnUserTextConfirm" onclick="confirmNewTurn()">
     </div>
 
-    <div id="Notebook" class="notebook ">
+    <div id="Notebook" class="notebook hidden">
         <h1>Notebook grid</h1>
         <table>
             <thead id="NoteHead">
@@ -74,7 +74,7 @@
         </table>
     </div>
 
-    <div id="Helper" class="helper ">
+    <div id="Helper" class="helper hidden">
         <h1>Helper info</h1>
         <p id="HelperText"></p>
     </div>
@@ -171,6 +171,8 @@
         var TurnL = document.getElementById("Turn");
         var whoT = document.getElementById("who");
         var HelperText = document.getElementById("HelperText");
+        var NotebookL = document.getElementById("Notebook");
+        var HelperL = document.getElementById("Helper");
         // Show settings
 
         SettingsL.classList.remove("hidden");
@@ -213,6 +215,8 @@
             clearSelection();
             YourCardsL.classList.add("hidden");
             document.getElementById("plus").classList.remove("hidden");
+            NotebookL.classList.remove("hidden");
+            HelperL.classList.remove("hidden");            
             newTurn();
         }
 
