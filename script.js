@@ -28,9 +28,20 @@ class Player {
         this.helped = [];
     }
 
+    lacksUnUnion(union) {
+        for(let l of Object.keys(this.lacks)) {
+            if(!union.has(l)) {
+                // Card is outside union; player lacks it for sure
+                this.lacks[l] = true;
+                this.holds[l] = false;
+            }
+        }
+    }
+
     clues() {
         let clues = [];
         let lasko = []; // Add elemets, later dedupe them to get union
+        let intersection = [];
 
         // We know for each round the cards called.
         // Combine this knowledge wih lacking cards to determine possible holds.
@@ -40,6 +51,7 @@ class Player {
 
             // Prepare for union
             lasko.push(...t);
+
         }
 
         for(let c of clues) {
@@ -62,18 +74,27 @@ class Player {
             // player lacks all cards outside of the union
             // Actually, we could test combinations of unions of _NCards_ shows.
                 // This should give us more information. TOBEDONE
-            for(let l of Object.keys(this.lacks)) {
-                if(!union.has(l)) {
-                    // Card is outside union; player lacks it for sure
-                    this.lacks[l] = true;
-                    this.holds[l] = false;
-                }
-            }
+            this.lacksUnUnion(union);
             helper.add(`${this.name}: Showed ${NCards} of ${union.size} unique cards; Lacks all cards outside of [${
                 [...union].join(", ")
             }].`);
 
             updateTable();
+        }
+
+        // Find intersection
+        if(this.showed.length >= NCards) {
+            intersection = intersect(...this.showed);
+            if(intersection.length == 1) { // TODO: We also need to figure out the rules if intersection is larger
+                if(this.lacks[intersection[0]]) {
+                    // Lacks intersection; all cards outside union are lacked as well.
+                    this.lacksUnUnion(union);
+                    helper.add(`${this.name}: Lacks intersected ${intersection[0]} _nekiNeki_; lacks all cards outside of [${
+                        [...union].join(", ")
+                    }].`);
+                    updateTable();
+                }
+            }
         }
 
         
@@ -157,6 +178,20 @@ function updateClues() {
     for([n, p] of players) {
         p.clues();
     }
+}
+
+function intersect(first, ...rest) {
+    // Check for each element of the first array if it also exists in all other arrays.
+    let intersection = [];
+    intersection = first.filter((el) => { 
+        for(r of rest) {
+            if(!r.includes(el)) {
+                return(false);
+            }
+        }
+        return(true);
+    })
+    return(intersection);
 }
 
 rounds = []; // Array of all rounds
