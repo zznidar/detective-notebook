@@ -71,6 +71,7 @@ class Player {
 
         let union = new Set(lasko);
         console.log(lasko, union);
+        /* This thing is false and leads to wrong conclusions. The intersection clue catches all clues, anyway.
         if(union.size >= 3*NCards) {
             // player lacks all cards outside of the union
             // Actually, we could test combinations of unions of _NCards_ shows.
@@ -82,6 +83,7 @@ class Player {
 
             updateTable();
         }
+        */
 
         // Find intersection
         if(this.showed.length >= NCards) {
