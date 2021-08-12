@@ -250,11 +250,19 @@
 
         function confirmNewTurn() {
             let witness = UsersL.getElementsByClassName("selected")[0]?.dataset.player; // Who showed a card
+            if(witness === undefined) {
+                let wentAround = confirm("Did it really go around?");
+                if(!wentAround) return; // It was a mistake. Cancel everything, let them fix it!
+            }
             if(UsersL.getElementsByClassName("selected").length > 1) alert("You have messed up the whole thing 😔\nOnly one user should have been selected ...");
             let called = [];
             for(let {id} of CardsL.getElementsByClassName("selected")) {
                 //console.log(id);
                 called.push(id);
+            }
+            if(called.length != 3) {
+                let knowinglyMistaken = confirm(`You only chose ${called.length} of 3 cards. Continue?`);
+                if(!knowinglyMistaken) return; // It was a mistake. Give them a second chance.
             }
 
             let showerGen = order();
