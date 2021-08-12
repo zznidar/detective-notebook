@@ -41,6 +41,7 @@ class Player {
     clues() {
         let clues = [];
         let lasko = []; // Add elemets, later dedupe them to get union
+            // Note: we could have simply used [].concat(...this.showed);
         let intersection = [];
 
         // We know for each round the cards called.
@@ -84,6 +85,43 @@ class Player {
 
         // Find intersection
         if(this.showed.length >= NCards) {
+            console.group("Intersection");
+            console.log("Ready to find intersection.")
+            // when we get NCard unique shows, all cards are contained in their union; unUnion is lacked.
+            // First, get (shows over NCard) combinations
+            let combos = k_combinations(this.showed, NCards);
+            console.log("combos", combos);
+            for(let c of combos) {
+                // Now find out whether each two cards are unique.
+                let isOk = true;
+                let comb2s = k_combinations(c, 2);
+                console.log("c: ", c, "comb2s: ", comb2s);
+                for(let c2 of comb2s) {
+                    if(!this.areUnique(...c2)) {
+                        isOk = false;
+                        console.log("c2 not unique", c2)
+                        break;
+                    }  // All pairs inside combination must be unique, else try next combo.
+                }
+                console.log("*****");
+                if(isOk === false) continue; // We also need to skip to the next iteration.
+                console.log("#####");
+                // All pairs inside this combination are unique.
+                    // All unUnion cards are lacked (union contains all cards this player holds)
+                let cunion = new Set([].concat(...c)); // Union of this combination
+                console.log("cunion", cunion);
+                console.groupEnd();
+                this.lacksUnUnion(cunion);
+                helper.add(`${this.name}: ${NCards} unique* shows; lacks all cards outside of [${
+                    [...cunion].join(", ")
+                }].`);
+                helper.add(`*Shows are considered unique if their intersection is lacked or empty.`);
+
+                updateTable();
+            }
+
+
+            /*
             intersection = intersect(...this.showed);
             if(intersection.length == 1) { // TODO: We also need to figure out the rules if intersection is larger
                 if(this.lacks[intersection[0]]) {
@@ -93,13 +131,32 @@ class Player {
                         [...union].join(", ")
                     }].`);
                     updateTable();
+
+                    // CRITICAL: This is only true if holds are disjunct but for this one element!
+                    // TODO: when we get NCard unique holds, all cards are contained in their union; unUnion is lacked.
                 }
             }
+            */
         }
 
         
 
         return(clues);
+    }
+
+    
+    areUnique(first, second) {
+        // Find out if two arrays are unique.
+        // DEF: Two arrays are unique if their intersection is lacked or empty.
+        let intersection = intersect(first, second);
+        if(intersection.length == 0) return(true); // they are truly unique by all means
+        for(let i of intersection) {
+            if(!this.lacks[i]) {
+                return(false); // Holds this card or is not yet known; not necessarily unique
+            }
+        }
+        return(true); // User lacks intersection; holds are unique
+        // F4T: Are two empty sets unique?
     }
 }
 
@@ -193,6 +250,40 @@ function intersect(first, ...rest) {
     })
     return(intersection);
 }
+
+function sameArray(first, second) {
+    return(first.length == second.length
+        && (new Set(first.concat(second))).size == first.length
+        );
+}
+
+// k_combinations function by luispaulorsl: https://gist.github.com/axelpale/3118596#gistcomment-2751797
+const k_combinations = (set, k) => {
+    if (k > set.length || k <= 0) {
+      return []
+    }
+    
+    if (k == set.length) {
+      return [set]
+    }
+    
+    if (k == 1) {
+      return set.reduce((acc, cur) => [...acc, [cur]], [])
+    }
+    
+    let combs = [], tail_combs = []
+    
+    for (let i = 0; i <= set.length - k + 1; i++) {
+      tail_combs = k_combinations(set.slice(i + 1), k - 1)
+      for (let j = 0; j < tail_combs.length; j++) {
+        combs.push([set[i], ...tail_combs[j]])
+      }
+    }
+    
+    return combs
+}
+  
+
 
 rounds = []; // Array of all rounds
 const players = new Map(); // Array of players added in order, starting with yourself
