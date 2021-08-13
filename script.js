@@ -70,49 +70,36 @@ class Player {
         }
 
         let union = new Set(lasko);
-        console.log(lasko, union);
-        /* This thing is false and leads to wrong conclusions. The intersection clue catches all clues, anyway.
-        if(union.size >= 3*NCards) {
-            // player lacks all cards outside of the union
-            // Actually, we could test combinations of unions of _NCards_ shows.
-                // This should give us more information. TOBEDONE
-            this.lacksUnUnion(union);
-            helper.add(`${this.name}: Showed ${NCards} of ${union.size} unique cards; Lacks all cards outside of [${
-                [...union].join(", ")
-            }].`);
-
-            updateTable();
-        }
-        */
+        //console.log(lasko, union);
 
         // Find intersection
         if(this.showed.length >= NCards) {
-            console.group("Intersection");
-            console.log("Ready to find intersection.")
+            //console.group("Intersection");
+            //console.log("Ready to find intersection.")
             // when we get NCard unique shows, all cards are contained in their union; unUnion is lacked.
             // First, get (shows over NCard) combinations
             let combos = k_combinations(this.showed, NCards);
-            console.log("combos", combos);
+            //console.log("combos", combos);
             for(let c of combos) {
                 // Now find out whether each two cards are unique.
                 let isOk = true;
                 let comb2s = k_combinations(c, 2);
-                console.log("c: ", c, "comb2s: ", comb2s);
+                //console.log("c: ", c, "comb2s: ", comb2s);
                 for(let c2 of comb2s) {
                     if(!this.areUnique(...c2)) {
                         isOk = false;
-                        console.log("c2 not unique", c2)
+                        //console.log("c2 not unique", c2)
                         break;
                     }  // All pairs inside combination must be unique, else try next combo.
                 }
-                console.log("*****");
+                //console.log("*****");
                 if(isOk === false) continue; // We also need to skip to the next iteration.
-                console.log("#####");
+                //console.log("#####");
                 // All pairs inside this combination are unique.
                     // All unUnion cards are lacked (union contains all cards this player holds)
                 let cunion = new Set([].concat(...c)); // Union of this combination
-                console.log("cunion", cunion);
-                console.groupEnd();
+                //console.log("cunion", cunion);
+                //console.groupEnd();
                 this.lacksUnUnion(cunion);
                 helper.add(`${this.name}: ${NCards} unique* shows; lacks all cards outside of [${
                     [...cunion].join(", ")
@@ -123,22 +110,6 @@ class Player {
             }
 
 
-            /*
-            intersection = intersect(...this.showed);
-            if(intersection.length == 1) { // TODO: We also need to figure out the rules if intersection is larger
-                if(this.lacks[intersection[0]]) {
-                    // Lacks intersection; all cards outside union are lacked as well.
-                    this.lacksUnUnion(union);
-                    helper.add(`${this.name}: Lacks intersected ${intersection[0]} _nekiNeki_; lacks all cards outside of [${
-                        [...union].join(", ")
-                    }].`);
-                    updateTable();
-
-                    // CRITICAL: This is only true if holds are disjunct but for this one element!
-                    // TODO: when we get NCard unique holds, all cards are contained in their union; unUnion is lacked.
-                }
-            }
-            */
         }
 
         // If NCards are already known, all other are crosses.
