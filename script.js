@@ -268,7 +268,7 @@ function holdsCards(player, cards, really) {
 }
 
 function init(inNames, inNCards) {
-    alert(inNames + inNCards);
+    //alert(inNames + inNCards);
     NCards = Number(inNCards);
     playersOrder = inNames.split(",");
     for(let playername of playersOrder) {
@@ -287,7 +287,7 @@ function init(inNames, inNCards) {
     players.set(PUBLICLY_KNOWN, new Player(PUBLICLY_KNOWN, true, false));
 
     // Add envelope
-    const ENVELOPE = "✉";
+    const ENVELOPE = "✉️";
     players.set(ENVELOPE, new Envelope(ENVELOPE));
 }
 
