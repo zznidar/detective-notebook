@@ -28,9 +28,9 @@ class Player {
         this.helped = [];
     }
 
-    lacksUnUnion(union) {
+    lacksUnUnion(unionSet) {
         for(let l of Object.keys(this.lacks)) {
-            if(!union.has(l)) {
+            if(!unionSet.has(l)) {
                 // Card is outside union; player lacks it for sure
                 this.lacks[l] = true;
                 this.holds[l] = false;
@@ -141,6 +141,26 @@ class Player {
             */
         }
 
+        // If NCards are already known, all other are crosses.
+        let knowns = new Set();
+        let unknowns = new Set();
+        for(let l in this.lacks) {
+            if(this.lacks[l] === false) knowns.add(l);
+            if(this.lacks[l] === undefined) unknowns.add(l);
+        }
+        if(knowns.size == NCards) {
+            // Lack all other cards
+            this.lacksUnUnion(knowns);
+            helper.add(`${this.name}: All held cards are known; cross out all other cards.`);
+        }
+        if(knowns.size + unknowns.size == NCards) {
+            // If sum of ticks and unknowns == NCards, then they are all ticks.
+            for(let u of unknowns) {
+                knownCard(this.name, u);
+            }
+            helper.add(`${this.name}: Only ${NCards} cards are not lacked; they must be held.`);
+        }
+
         
 
         return(clues);
@@ -159,6 +179,71 @@ class Player {
         }
         return(true); // User lacks intersection; holds are unique
         // F4T: Are two empty sets unique?
+
+        // CRITICAL: [] and [1,2,3] are unique by this function. But that messes up with other algorhythms. 
+            // Maybe check if they are both length of 3.
+    }
+}
+
+class Envelope extends Player {
+    constructor(name, defaultLacks = undefined, defaultHolds = undefined) {
+        super(name, defaultLacks = undefined, defaultHolds = undefined);
+        this.guest = this.weapon = this.room = undefined;
+    }
+
+    clues() {
+        super.clues();
+        // Envelope holds exactly 1 card of each type.
+        if(this.guest) {
+            for(let g of guests) {
+                this.lacks[g] = !(this.guest == g);
+                this.holds[g] = (this.guest == g);
+            }
+            helper.add(`${this.name}: Guest is known; cross all other guests.`);
+        }
+        if(this.weapon) {
+            for(let w of weapons) {
+                this.lacks[w] = !(this.weapon == w);
+                this.holds[w] = (this.weapon == w);
+            }
+            helper.add(`${this.name}: Weapon is known; cross all other weapons.`);
+
+        }
+        if(this.room) {
+            for(let r of rooms) {
+                this.lacks[r] = !(this.room == r);
+                this.holds[r] = (this.room == r);
+            }
+            helper.add(`${this.name}: Room is known; cross all other rooms.`);
+        }
+
+        // (envelope) If all but one are lacked, the one is held
+        let unknownGuests = [];
+        for(let g of guests) {
+            if(!this.lacks[g]) unknownGuests.push(g);
+        }
+        if(unknownGuests.length == 1) { 
+            knownCard(this.name, unknownGuests[0]);
+            helper.add(`${this.name}: Must hold 1 guest: ${unknownGuests[0]}`);
+        }
+
+        let unknownWeapons = [];
+        for(let w of weapons) {
+            if(!this.lacks[w]) unknownWeapons.push(w);
+        }
+        if(unknownWeapons.length == 1) {
+            knownCard(this.name, unknownWeapons[0]);
+            helper.add(`${this.name}: Must hold 1 weapon: ${unknownWeapons[0]}`);
+        }
+
+        let unknownRooms = [];
+        for(let r of rooms) {
+            if(!this.lacks[r]) unknownRooms.push(r);
+        }
+        if(unknownRooms.length == 1) {
+            knownCard(this.name, unknownRooms[0]);
+            helper.add(`${this.name}: Must hold 1 room: ${unknownRooms[0]}`);
+        }
     }
 }
 
@@ -226,6 +311,10 @@ function init(inNames, inNCards) {
     // don't add that player into the playersOrder
     const PUBLICLY_KNOWN = "publiclyKnown";
     players.set(PUBLICLY_KNOWN, new Player(PUBLICLY_KNOWN, true, false));
+
+    // Add envelope
+    const ENVELOPE = "✉";
+    players.set(ENVELOPE, new Envelope(ENVELOPE));
 }
 
 function nextRound() {
@@ -237,6 +326,7 @@ function updateClues() {
     for([n, p] of players) {
         p.clues();
     }
+    updateTable();
 }
 
 function intersect(first, ...rest) {
