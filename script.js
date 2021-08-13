@@ -170,6 +170,9 @@ class Player {
     areUnique(first, second) {
         // Find out if two arrays are unique.
         // DEF: Two arrays are unique if their intersection is lacked or empty.
+
+        if(first.size != NCards || second.size != NCards) return(false); // Empty arrays are not unique!
+
         let intersection = intersect(first, second);
         if(intersection.length == 0) return(true); // they are truly unique by all means
         for(let i of intersection) {
@@ -180,7 +183,7 @@ class Player {
         return(true); // User lacks intersection; holds are unique
         // F4T: Are two empty sets unique?
 
-        // CRITICAL: [] and [1,2,3] are unique by this function. But that messes up with other algorhythms. 
+        // SOLVED: [] and [1,2,3] are unique by this function. But that messes up with other algorhythms. 
             // Maybe check if they are both length of 3.
     }
 }
