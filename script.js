@@ -3,6 +3,7 @@ weapons = ["knife", "candlestick", "pistol", "poison", "rope", "dumbbell"];
 rooms = ["hall", "dinningRoom", "kitchen", "patio", "observatory", "theatre", "livingRoom", "spa", "guestHouse"];
 
 const ENVELOPE = "✉️"; // Define it here, otherwise it is undefined when defining classes
+const PUBLICLY_KNOWN = "publiclyKnown"; // Define it here to allow re-init()
 
 class Cards {
     constructor(defaultState = undefined) {
@@ -288,7 +289,7 @@ function init(inNames, inNCards) {
     // If there are fewer than 6 players, cards are split evenly, 3 are put into envelope, 
     // and excess cards are shown to public. Assign them to a "publiclyKnown" player, but 
     // don't add that player into the playersOrder
-    const PUBLICLY_KNOWN = "publiclyKnown";
+    //const PUBLICLY_KNOWN is defined at the top of the file
     players.set(PUBLICLY_KNOWN, new Player(PUBLICLY_KNOWN, true, false));
 
     // Add envelope
@@ -352,6 +353,53 @@ const k_combinations = (set, k) => {
     }
     
     return combs
+}
+
+
+function replayer() {
+    // After editing rounds, go through all of them
+    // and enter data round by round.
+    console.log("Replaying the game, using the data from the Rounds array: ", rounds);
+
+    // Initiate the game again. This resets the Players dictionary.
+    init(document.getElementById("inNames").value, document.getElementById("inNCards").value);
+
+    for(let r of rounds) {
+        console.log(r);
+        if(r.calledCards === undefined && r.caller === undefined) {
+            console.log("Yesa");
+            // A manually-entered known card.
+            knownCard(r.witness, r.card);
+        } else {
+            // A normal round.
+            // Uh-oh, our code is a mess. 
+            // At first glance, it seems complicated to simulate a normal round.
+            // We need something like playername -> playerindex, so we can pass it to the generator
+
+            // Maybe something like: while(playergen.next() != r.caller)
+            //  then: do it the same way we do it when playing normally
+
+            let showerGen = order();
+            while(showerGen.next().value != r.caller) { /* do nothing */ }
+            
+            // Next player will be the one after the caller
+            console.log(
+            shower = showerGen.next().value
+            );
+            for(let i = 1; i < NPlayers; i++) {
+                //console.log(shower, witness);
+                console.assert(shower != r.caller, "Loops too many times! It should exit _before_ coming around");
+                if(shower == r.witness) {
+                    holdsCards(shower, r.calledCards, true);
+                    break;
+                } else {
+                    holdsCards(shower, r.calledCards, false);
+                    shower = showerGen.next().value;
+                }
+            }
+
+        }
+    }
 }
   
 

@@ -211,6 +211,9 @@
             for(let {id} of CardsL.getElementsByClassName("selected")) {
                 //console.log(id);
                 knownCard(currentPlayer, id);
+
+                // Also add this to Rounds to allow re-playing
+                writeRound(new Round(undefined, undefined, currentPlayer, id));
             }
             clearSelection();
             YourCardsL.classList.add("hidden");
@@ -234,6 +237,8 @@
             for(let {id} of CardsL.getElementsByClassName("selected")) {
                 //console.log(id);
                 knownCard(user, id);
+                // Also add it to Rounds (to implement Undo)
+                writeRound(new Round(undefined, undefined, user, id));
             }
             clearSelection();
             NewKnownCardL.classList.add("hidden");
