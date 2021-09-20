@@ -268,7 +268,7 @@
             let showerGen = order();
             showerGen.next(); // Yield input value is ignored the first time
             let shower = showerGen.next(currentIndex).value; // Just goes around until it reaches the one you selected
-            console.warn("THIS");
+            //console.warn("THIS");
             for(let i = 1; i < NPlayers; i++) {
                 //console.log(shower, witness);
                 console.assert(shower != currentPlayer, "Loops too many times! It should exit _before_ coming around");

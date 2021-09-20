@@ -2,6 +2,8 @@ guests = ["mustard", "plum", "green", "peacock", "scarlet", "white"];
 weapons = ["knife", "candlestick", "pistol", "poison", "rope", "dumbbell"];
 rooms = ["hall", "dinningRoom", "kitchen", "patio", "observatory", "theatre", "livingRoom", "spa", "guestHouse"];
 
+const ENVELOPE = "✉️"; // Define it here, otherwise it is undefined when defining classes
+
 class Cards {
     constructor(defaultState = undefined) {
         for(let g of guests) {
@@ -39,6 +41,8 @@ class Player {
     }
 
     clues() {
+        let _NCards = (this.name == ENVELOPE ? 3 : NCards); // Envelope should always be checked against 3 cards.
+
         let clues = [];
         let lasko = []; // Add elemets, later dedupe them to get union
             // Note: we could have simply used [].concat(...this.showed);
@@ -73,12 +77,12 @@ class Player {
         //console.log(lasko, union);
 
         // Find intersection
-        if(this.showed.length >= NCards) {
+        if(this.showed.length >= _NCards) {
             //console.group("Intersection");
             //console.log("Ready to find intersection.")
             // when we get NCard unique shows, all cards are contained in their union; unUnion is lacked.
             // First, get (shows over NCard) combinations
-            let combos = k_combinations(this.showed, NCards);
+            let combos = k_combinations(this.showed, _NCards);
             //console.log("combos", combos);
             for(let c of combos) {
                 // Now find out whether each two cards are unique.
@@ -101,7 +105,7 @@ class Player {
                 //console.log("cunion", cunion);
                 //console.groupEnd();
                 this.lacksUnUnion(cunion);
-                helper.add(`${this.name}: ${NCards} unique* shows; lacks all cards outside of [${
+                helper.add(`${this.name}: ${_NCards} unique* shows; lacks all cards outside of [${
                     [...cunion].join(", ")
                 }].`);
                 helper.add(`*Shows are considered unique if their intersection is lacked or empty.`);
@@ -112,24 +116,24 @@ class Player {
 
         }
 
-        // If NCards are already known, all other are crosses.
+        // If _NCards are already known, all other are crosses.
         let knowns = new Set();
         let unknowns = new Set();
         for(let l in this.lacks) {
             if(this.lacks[l] === false) knowns.add(l);
             if(this.lacks[l] === undefined) unknowns.add(l);
         }
-        if(knowns.size == NCards) {
+        if(knowns.size == _NCards) {
             // Lack all other cards
             this.lacksUnUnion(knowns);
             helper.add(`${this.name}: All held cards are known; cross out all other cards.`);
         }
-        if(knowns.size + unknowns.size == NCards) {
-            // If sum of ticks and unknowns == NCards, then they are all ticks.
+        if(knowns.size + unknowns.size == _NCards) {
+            // If sum of ticks and unknowns == _NCards, then they are all ticks.
             for(let u of unknowns) {
                 knownCard(this.name, u);
             }
-            helper.add(`${this.name}: Only ${NCards} cards are not lacked; they must be held.`);
+            helper.add(`${this.name}: Only ${_NCards} cards are not lacked; they must be held.`);
         }
 
         
@@ -287,7 +291,7 @@ function init(inNames, inNCards) {
     players.set(PUBLICLY_KNOWN, new Player(PUBLICLY_KNOWN, true, false));
 
     // Add envelope
-    const ENVELOPE = "✉️";
+    //const ENVELOPE is defined at the top of the file
     players.set(ENVELOPE, new Envelope(ENVELOPE));
 }
 
@@ -357,3 +361,6 @@ const players = new Map(); // Array of players added in order, starting with you
 helper = new Set(); // Contains clues/suggestions once known
 // Show helper log: [...helper].join("\n");
 
+// TODO: Show all rounds; round editor
+    // Should a mistake be made while entering cards/rounds, fix them in the round editor.
+    // After that, reset players and assess all rounds from the start.
