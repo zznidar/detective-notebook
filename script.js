@@ -78,8 +78,9 @@ class Player {
 
         // Find intersection
         if(this.showed.length >= _NCards) {
-            //console.group("Intersection");
-            //console.log("Ready to find intersection.")
+            console.log(_NCards);
+            console.group("Intersection");
+            console.log("Ready to find intersection.")
             // when we get NCard unique shows, all cards are contained in their union; unUnion is lacked.
             // First, get (shows over NCard) combinations
             let combos = k_combinations(this.showed, _NCards);
@@ -88,22 +89,22 @@ class Player {
                 // Now find out whether each two cards are unique.
                 let isOk = true;
                 let comb2s = k_combinations(c, 2);
-                //console.log("c: ", c, "comb2s: ", comb2s);
+                console.log("c: ", c, "comb2s: ", comb2s);
                 for(let c2 of comb2s) {
                     if(!this.areUnique(...c2)) {
                         isOk = false;
-                        //console.log("c2 not unique", c2)
+                        console.log("c2 not unique", c2)
                         break;
                     }  // All pairs inside combination must be unique, else try next combo.
                 }
-                //console.log("*****");
+                console.log("*****");
                 if(isOk === false) continue; // We also need to skip to the next iteration.
-                //console.log("#####");
+                console.log("#####");
                 // All pairs inside this combination are unique.
                     // All unUnion cards are lacked (union contains all cards this player holds)
                 let cunion = new Set([].concat(...c)); // Union of this combination
-                //console.log("cunion", cunion);
-                //console.groupEnd();
+                console.log("cunion", cunion);
+                console.groupEnd();
                 this.lacksUnUnion(cunion);
                 helper.add(`${this.name}: ${_NCards} unique* shows; lacks all cards outside of [${
                     [...cunion].join(", ")
@@ -146,7 +147,7 @@ class Player {
         // Find out if two arrays are unique.
         // DEF: Two arrays are unique if their intersection is lacked or empty.
 
-        if(first.size != NCards || second.size != NCards) return(false); // Empty arrays are not unique!
+        if(first.length != NCards || second.length != NCards) return(false); // Empty arrays are not unique!
 
         let intersection = intersect(first, second);
         if(intersection.length == 0) return(true); // they are truly unique by all means
