@@ -77,6 +77,42 @@
     <div id="Helper" class="helper hidden">
         <h1>Helper info</h1>
         <p id="HelperText"></p>
+        <input type="button" id="edit" value="Rounds editor" onclick="editRounds()">
+    </div>
+
+
+    <div id="RoundsContainer" class="rounds hidden">
+        <h1>Rounds Editor</h1>
+        <p>Edit the rounds you messed up</p>
+
+        <!-- We will simplify it. Just add an option to delete wrong rounds.
+                Then add new rounds normally. Because the order is not important. -->
+
+        <!-- No, we won't do that. It is easier to auto-select buttons in AddNewRound and just change that round. -->
+
+        <!-- Rounds here -->
+        <div id="RoundSelector">
+            <h2>Rounds</h2>
+        </div>
+
+        
+        <!-- Users here 
+        <input type="button" value="Confirm!" class="confirm" id="TurnUserTextConfirm" onclick="confirmNewTurn()">-->
+    </div>
+
+
+    <div id="Importer" class="turn ">
+        <h1>Import rounds data</h1>
+        <p>Here, you can import previously exported game data.</p>
+        <label for="inputfile">Choose a .json file of previous game data:</label>
+        <input type="file" id="inputpicker" name="inputfile" accept=".json">
+        <input type="button" value="Import!" class="confirm" id="ImportBtn" onclick="importData(rounds)">
+    </div>
+
+    <div id="Exporter" class="turn ">
+        <h1>Export rounds data</h1>
+        <p>Here, you can export current game data and import it later.</p>
+        <input type="button" value="Export!" class="confirm" id="ExportBtn" onclick="exportData(rounds)">
     </div>
 
 
@@ -92,7 +128,8 @@
         const NoteHead = document.getElementById("NoteHead");
         const tableHeaderPlaceholder = document.getElementById("tableHeaderPlaceholder");
         const NoteTableHeader = document.getElementById("NoteTableHeader");
-        let tdPlaceholder = document.createElement("td");
+        let tdPlaceholder = document.createElement("td");        
+        const inputpicker = document.getElementById("inputpicker");
         
         function generateCardsUsers() {
             for(let g of guests) {
@@ -173,6 +210,7 @@
         var HelperText = document.getElementById("HelperText");
         var NotebookL = document.getElementById("Notebook");
         var HelperL = document.getElementById("Helper");
+        var RoundsL = document.getElementById("RoundsContainer");
         // Show settings
 
         SettingsL.classList.remove("hidden");
@@ -291,6 +329,22 @@
             nextRound();
             newTurn();
         }
+
+
+        function editRounds() {
+            RoundsL.classList.remove("hidden");
+            for(let i = 0; i < rounds.length; i++) {
+                let r = rounds[i];
+                console.log(JSON.stringify(i, r));
+                let rb = buttonCardPlaceholder.cloneNode();
+                rb.style.display = "inline-block";
+                rb.attributes.removeNamedItem("id");
+                rb.dataset.roundIndex = i;
+                rb.value = JSON.stringify(r);
+                document.getElementById("RoundSelector").appendChild(rb);
+            }
+        }
+
 
         function updateTable() {
             for(let u of [...NoteTable.getElementsByClassName("updatable")]) {

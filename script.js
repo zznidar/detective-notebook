@@ -229,10 +229,17 @@ class Envelope extends Player {
 
 class Round {
     constructor(caller, calledCards, witness = undefined, card = undefined) {
-        this.caller = caller;
-        this.calledCards = calledCards;
-        this.witness = witness;
-        this.card = card;    
+        this.caller = caller; // Who called 3 cards
+        this.calledCards = calledCards; // Which 3 cards were called
+        this.witness = witness; // Who witnessed it (stopped the round)
+        this.card = card; // which card was it (I think this is never used)
+    }
+}
+
+class Metadata {
+    constructor(players, NCards) {
+        this.players = players;
+        this.NCards = NCards;
     }
 }
 
@@ -280,6 +287,9 @@ function init(inNames, inNCards) {
     for(let playername of playersOrder) {
         players.set(playername, new Player(playername));
     }
+
+    // Save metadata
+    rounds.push(new Metadata(playersOrder, NCards));
 
     currentIndex = 0; // your turn
     playerGen = order();
@@ -356,15 +366,18 @@ const k_combinations = (set, k) => {
 }
 
 
-function replayer() {
+function replayer(rounds) {
     // After editing rounds, go through all of them
     // and enter data round by round.
     console.log("Replaying the game, using the data from the Rounds array: ", rounds);
 
     // Initiate the game again. This resets the Players dictionary.
-    init(document.getElementById("inNames").value, document.getElementById("inNCards").value);
-
-    for(let r of rounds) {
+    init(rounds[0]["players"].join(","), rounds[0]["NCards"]);
+    // Suppose metadata is always the first element
+    // if it weren't, there would probably be reference errors as the Players is not set up yet
+    // otherwise, comparing rounds[i].constructor.name would be more suitable
+    
+    for(let r of rounds.slice(1)) {
         console.log(r);
         if(r.calledCards === undefined && r.caller === undefined) {
             console.log("Yesa");
@@ -400,6 +413,32 @@ function replayer() {
 
         }
     }
+
+    // Now calculate all the clues based on the newest (fixed) data
+    updateClues(); 
+}
+
+
+function exportData(rounds) {
+    download(`detective-notebook_${(new Date()).getTime()}.json`, JSON.stringify(rounds))
+}
+
+// https://ourcodeworld.com/articles/read/189/how-to-create-a-file-and-generate-a-download-with-javascript-in-the-browser-without-a-server
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }
+
+async function importData(data) {
+    JSON.parse(await data?.text())
 }
   
 
