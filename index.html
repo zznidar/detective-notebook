@@ -102,22 +102,13 @@
         <label for="EditCaller">Edit caller (who called 3 cards)</label>
         <select name="EditCaller" id="EditCaller">
         </select>
-
-        <label for="EditCards">Edit called cards</label>
-        <select name="EditCards" id="EditCards" multiple>
-        </select>
-
-        <label for="EditWitness">Edit witness (who showed a card)</label>
-        <select name="EditWitness" id="EditWitness">
-        </select>
+        <!-- Cards and witness will be moved here once a round is selected. -->
 
         <div id="ConfirmCancelEditing">
             <input type="button" value="Confirm!" class="confirm" id="EditingConfirm" onclick="confirmEditing(this.dataset.roundIndex)">
             <input type="button" value="Cancel editing" class="confirm" id="EditingCancel" onclick="cancelEditing()">
         </div>
         
-        <!-- Users here 
-        <input type="button" value="Confirm!" class="confirm" id="TurnUserTextConfirm" onclick="confirmNewTurn()">-->
     </div>
 
 
@@ -232,8 +223,6 @@
         var HelperL = document.getElementById("Helper");
         var RoundsL = document.getElementById("RoundsContainer");
         var EditCaller = document.getElementById("EditCaller");
-        var EditCards = document.getElementById("EditCards");
-        var EditWitness = document.getElementById("EditWitness");
         // Show settings
 
         SettingsL.classList.remove("hidden");
