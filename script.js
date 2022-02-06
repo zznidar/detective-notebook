@@ -291,6 +291,9 @@ function init(inNames, inNCards) {
     // Save metadata, but only if not replaying (i. e. not editing and not importing) (in other words, only when starting a new game)
     if(!(rounds.length)) rounds.push(new Metadata(playersOrder, NCards));
 
+    // We must also reset the helper
+    helper = new Set();
+
     currentIndex = 0; // your turn
     playerGen = order();
     currentPlayer = playerGen.next().value;
