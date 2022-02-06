@@ -90,11 +90,31 @@
 
         <!-- No, we won't do that. It is easier to auto-select buttons in AddNewRound and just change that round. -->
 
+        <!-- Neither that. We will make a multiple-select option with auto-selected old values. One <select> per card type, one (single) for caller and one (single) for witness/responder. -->
+        <!-- hide TurnView. -->
+
         <!-- Rounds here -->
         <div id="RoundSelector">
             <h2>Rounds</h2>
         </div>
 
+        <!-- Multiple select elements here: caller, calledCards, witness. Suppose metadata is not editable. Should someone want to edit metadata, export the game, manually edit it, and re-import. -->
+        <label for="EditCaller">Edit caller (who called 3 cards)</label>
+        <select name="EditCaller" id="EditCaller">
+        </select>
+
+        <label for="EditCards">Edit called cards</label>
+        <select name="EditCards" id="EditCards" multiple>
+        </select>
+
+        <label for="EditWitness">Edit witness (who showed a card)</label>
+        <select name="EditWitness" id="EditWitness">
+        </select>
+
+        <div id="ConfirmCancelEditing">
+            <input type="button" value="Confirm!" class="confirm" id="EditingConfirm" onclick="confirmEditing(this.dataset.roundIndex)">
+            <input type="button" value="Cancel editing" class="confirm" id="EditingCancel" onclick="cancelEditing()">
+        </div>
         
         <!-- Users here 
         <input type="button" value="Confirm!" class="confirm" id="TurnUserTextConfirm" onclick="confirmNewTurn()">-->
@@ -106,7 +126,7 @@
         <p>Here, you can import previously exported game data.</p>
         <label for="inputfile">Choose a .json file of previous game data:</label>
         <input type="file" id="inputpicker" name="inputfile" accept=".json">
-        <input type="button" value="Import!" class="confirm" id="ImportBtn" onclick="importData(rounds)">
+        <input type="button" value="Import!" class="confirm" id="ImportBtn" onclick="importData(inputpicker.files[0])">
     </div>
 
     <div id="Exporter" class="turn ">
@@ -211,6 +231,9 @@
         var NotebookL = document.getElementById("Notebook");
         var HelperL = document.getElementById("Helper");
         var RoundsL = document.getElementById("RoundsContainer");
+        var EditCaller = document.getElementById("EditCaller");
+        var EditCards = document.getElementById("EditCards");
+        var EditWitness = document.getElementById("EditWitness");
         // Show settings
 
         SettingsL.classList.remove("hidden");
@@ -341,8 +364,78 @@
                 rb.attributes.removeNamedItem("id");
                 rb.dataset.roundIndex = i;
                 rb.value = JSON.stringify(r);
+                rb.addEventListener("click", showMultipleSelects)
                 document.getElementById("RoundSelector").appendChild(rb);
             }
+        }
+        function showMultipleSelects(event) {
+            console.log(this.dataset.roundIndex, event);
+            let editingRound = rounds[this.dataset.roundIndex];
+            document.getElementById("EditingConfirm").dataset.roundIndex = this.dataset.roundIndex;
+
+            // Caller
+            for(let user of players.keys()){
+                let u = document.createElement("option");
+                u.innerText = u.value = user;
+                if(editingRound.caller == user) u.setAttribute("selected", "");
+                EditCaller.appendChild(u);
+            }
+            // Called Cards
+            RoundsL.appendChild(CardsL);
+            for(let i of CardsL.getElementsByTagName("input")) {
+                if(editingRound.calledCards.includes(i.id)) {
+                    i.classList.add("selected");
+                } else {
+                    i.classList.remove("selected");
+                }
+            }
+            // Witness
+            RoundsL.appendChild(UsersL);
+            for(let i of UsersL.getElementsByTagName("input")) {
+                if(editingRound.witness == i.value) {
+                    i.classList.add("selected");
+                } else {
+                    i.classList.remove("selected");
+                }
+            }
+
+            // Move confirm/cancel to the bottom
+            RoundsL.appendChild(ConfirmCancelEditing);
+        }
+        function confirmEditing(roundIndex) {
+            console.log(roundIndex);
+            let caller = EditCaller.value;
+            // Let's just duplicate this code for now. Should refraction later.
+            let witness = UsersL.getElementsByClassName("selected")[0]?.dataset.player; // Who showed a card
+            if(witness === undefined) {
+                let wentAround = confirm("Did it really go around?");
+                if(!wentAround) return; // It was a mistake. Cancel everything, let them fix it!
+            }
+            if(UsersL.getElementsByClassName("selected").length > 1) alert("You have messed up the whole thing 😔\nOnly one user should have been selected ...");
+            let called = [];
+            for(let {id} of CardsL.getElementsByClassName("selected")) {
+                //console.log(id);
+                called.push(id);
+            }
+            if(called.length != 3) {
+                let knowinglyMistaken = confirm(`You only chose ${called.length} of 3 cards. Continue?`);
+                if(!knowinglyMistaken) return; // It was a mistake. Give them a second chance.
+            }
+
+            rounds[roundIndex] = new Round(caller, called, witness);
+            // TODO: call replayer()
+            clearSelection();
+            document.getElementById("RoundSelector").innerHTML = "<h2>Rounds</h2>";
+            RoundsL.classList.add("hidden");
+            newTurn(); // Moves thingies back to the top
+
+        }
+        function cancelEditing() {
+            // move buttons back to top, close editing pannels.
+            clearSelection();
+            document.getElementById("RoundSelector").innerHTML = "<h2>Rounds</h2>";
+            RoundsL.classList.add("hidden");
+            newTurn(); // Moves thingies back to the top
         }
 
 
