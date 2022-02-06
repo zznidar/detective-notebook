@@ -379,7 +379,7 @@
             // Called Cards
             RoundsL.appendChild(CardsL);
             for(let i of CardsL.getElementsByTagName("input")) {
-                if(editingRound.calledCards.includes(i.id)) {
+                if(editingRound.calledCards?.includes(i.id)) {
                     i.classList.add("selected");
                 } else {
                     i.classList.remove("selected");
