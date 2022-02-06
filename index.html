@@ -101,6 +101,7 @@
         <!-- Multiple select elements here: caller, calledCards, witness. Suppose metadata is not editable. Should someone want to edit metadata, export the game, manually edit it, and re-import. -->
         <label for="EditCaller">Edit caller (who called 3 cards)</label>
         <select name="EditCaller" id="EditCaller">
+            <option value=""><i>editing a known card</i></option>
         </select>
         <!-- Cards and witness will be moved here once a round is selected. -->
 
@@ -365,7 +366,13 @@
             }
         }
         function showMultipleSelects(event) {
-            console.log(this.dataset.roundIndex, event);
+            // When editing rounds, all buttons should first be unselected. Then select this round and corresponding cards.
+            clearSelection()
+            this.classList.add("selected");
+
+            EditCaller.innerHTML = `<option value="">editing a known card</option>`; // Reset this thing.
+
+
             let editingRound = rounds[this.dataset.roundIndex];
             document.getElementById("EditingConfirm").dataset.roundIndex = this.dataset.roundIndex;
 
@@ -376,6 +383,12 @@
                 if(editingRound.caller == user) u.setAttribute("selected", "");
                 EditCaller.appendChild(u);
             }
+            /*if(!editingRound.caller) {
+                EditCaller.classList.add("hidden");
+            } else {
+                EditCaller.classList.remove("hidden");
+            }*/
+
             // Called Cards
             RoundsL.appendChild(CardsL);
             for(let i of CardsL.getElementsByTagName("input")) {
@@ -400,7 +413,7 @@
         }
         function confirmEditing(roundIndex) {
             console.log(roundIndex);
-            let caller = EditCaller.value;
+            let caller = EditCaller.value || undefined;
             // Let's just duplicate this code for now. Should refraction later.
             let witness = UsersL.getElementsByClassName("selected")[0]?.dataset.player; // Who showed a card
             if(witness === undefined) {
@@ -418,13 +431,18 @@
                 if(!knowinglyMistaken) return; // It was a mistake. Give them a second chance.
             }
 
-            rounds[roundIndex] = new Round(caller, called, witness);
+            let card;
+            if(caller === undefined) {
+                card = called[0]; // known card
+                called = undefined; 
+            }
+
+            rounds[roundIndex] = new Round(caller, called, witness, card);
             replayer(rounds); // Re-play the game using new (edited) game data
             clearSelection();
             document.getElementById("RoundSelector").innerHTML = "<h2>Rounds</h2>";
             RoundsL.classList.add("hidden");
             newTurn(); // Moves thingies back to the top
-
         }
         function cancelEditing() {
             // move buttons back to top, close editing pannels.
