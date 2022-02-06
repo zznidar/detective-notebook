@@ -288,8 +288,8 @@ function init(inNames, inNCards) {
         players.set(playername, new Player(playername));
     }
 
-    // Save metadata
-    rounds.push(new Metadata(playersOrder, NCards));
+    // Save metadata, but only if not replaying (i. e. not editing and not importing) (in other words, only when starting a new game)
+    if(!([].length)) rounds.push(new Metadata(playersOrder, NCards));
 
     currentIndex = 0; // your turn
     playerGen = order();
@@ -438,7 +438,8 @@ function download(filename, text) {
   }
 
 async function importData(data) {
-    JSON.parse(await data?.text())
+    rounds = JSON.parse(await data?.text());
+    replayer(rounds);
 }
   
 
