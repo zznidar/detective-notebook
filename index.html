@@ -423,7 +423,7 @@
             }
 
             rounds[roundIndex] = new Round(caller, called, witness);
-            // TODO: call replayer()
+            replayer(rounds); // Re-play the game using new (edited) game data
             clearSelection();
             document.getElementById("RoundSelector").innerHTML = "<h2>Rounds</h2>";
             RoundsL.classList.add("hidden");
