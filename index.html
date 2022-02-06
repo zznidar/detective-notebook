@@ -223,6 +223,7 @@
         var HelperL = document.getElementById("Helper");
         var RoundsL = document.getElementById("RoundsContainer");
         var EditCaller = document.getElementById("EditCaller");
+        var ImporterL = document.getElementById("Importer");
         // Show settings
 
         SettingsL.classList.remove("hidden");
@@ -242,10 +243,12 @@
                     // Probably it should be run multi-threaded in webworkers, anyway
         }
 
-        function confirmSettings() {
-            init(
-                document.getElementById("inNames").value, 
-                document.getElementById("inNCards").value)
+        function confirmSettings(replaying = false) {
+            if(!replaying){
+                init(
+                    document.getElementById("inNames").value, 
+                    document.getElementById("inNCards").value)
+            }
             SettingsL.classList.add("hidden");
             generateCardsUsers();
             yourCards();
@@ -257,13 +260,15 @@
             CardsL.classList.remove("hidden");
         }
 
-        function confirmYourCards() {
-            for(let {id} of CardsL.getElementsByClassName("selected")) {
-                //console.log(id);
-                knownCard(currentPlayer, id);
+        function confirmYourCards(replaying = false) {
+            if(!replaying) {
+                for(let {id} of CardsL.getElementsByClassName("selected")) {
+                    //console.log(id);
+                    knownCard(currentPlayer, id);
 
-                // Also add this to Rounds to allow re-playing
-                writeRound(new Round(undefined, undefined, currentPlayer, id));
+                    // Also add this to Rounds to allow re-playing
+                    writeRound(new Round(undefined, undefined, currentPlayer, id));
+                }
             }
             clearSelection();
             YourCardsL.classList.add("hidden");
@@ -271,6 +276,8 @@
             NotebookL.classList.remove("hidden");
             HelperL.classList.remove("hidden");            
             newTurn();
+            // Hide the importer as it is not needed anymore (either a round was just imported or a new game has started)
+            Importer.classList.add("hidden");
         }
 
         function newCards() {
